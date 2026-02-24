@@ -67,7 +67,7 @@ The application follows **Clean Architecture** with an **MVI (Model-View-Intent)
 **Contents:**
 - `screen/CanvasScreen.kt` — Full-screen Compose Canvas; handles touch/key events.
 - `viewmodel/CanvasViewModel.kt` — MVI ViewModel; processes Intents, emits States.
-- `mvi/CanvasIntent.kt` — Sealed interface: `Tap(x, y, pointerId)`, `KeyPress(key)`, `AnimationCompleted(id)`.
+- `mvi/CanvasIntent.kt` — Sealed interface: `Tap(x, y, pointerId)`, `KeyPress(key)`.
 - `mvi/CanvasState.kt` — Immutable data class: list of active animations, background hue, loading status.
 - `mvi/CanvasSideEffect.kt` — One-shot effects: `PlaySound(soundId)`.
 - `animation/AnimationRenderer.kt` — Dispatches to specific animation drawers based on `AnimationType`.
@@ -264,7 +264,7 @@ Tap Event → CanvasIntent.Tap → ViewModel reduces state →
   new ActiveAnimation added to State.animations list →
     Canvas reads State, draws each active animation at current progress →
       Animatable coroutine drives progress 0f → 1f over duration →
-        On completion: CanvasIntent.AnimationCompleted removes it from state
+        On completion: Internal state driver removes it automatically from state during update cycle.
 ```
 
 ### 5.3 Performance Rules
@@ -305,7 +305,6 @@ User Input ──► Intent ──► ViewModel.reduce() ──► New State ─
 sealed interface CanvasIntent {
     data class Tap(val x: Float, val y: Float, val pointerId: Int) : CanvasIntent
     data class KeyPress(val key: Char) : CanvasIntent
-    data class AnimationCompleted(val animationId: String) : CanvasIntent
 }
 
 // State
@@ -339,7 +338,6 @@ class CanvasViewModel(
         when (intent) {
             is CanvasIntent.Tap -> handleTap(intent)
             is CanvasIntent.KeyPress -> handleKeyPress(intent)
-            is CanvasIntent.AnimationCompleted -> removeAnimation(intent.animationId)
         }
     }
 

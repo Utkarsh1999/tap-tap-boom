@@ -15,9 +15,4 @@ sealed interface CanvasIntent {
      * User pressed a key (desktop/keyboard mode).
      */
     data class KeyPress(val key: Char) : CanvasIntent
-
-    /**
-     * An animation has completed its lifecycle and should be removed.
-     */
-    data class AnimationCompleted(val animationId: String) : CanvasIntent
 }

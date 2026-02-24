@@ -5,82 +5,82 @@
   "sounds": [
     {
       "id": "s01",
-      "label": "Kick",
+      "label": "Deep Kick",
       "file": "kick.wav",
       "animationType": "ripple",
-      "color": "#FF6B6B",
+      "color": "#FF4757",
       "keyMapping": "Q"
     },
     {
       "id": "s02",
-      "label": "Snare",
+      "label": "Crisp Snare",
       "file": "snare.wav",
       "animationType": "burst",
-      "color": "#4ECDC4",
+      "color": "#70A1FF",
       "keyMapping": "W"
     },
     {
       "id": "s03",
-      "label": "HiHat",
+      "label": "Tight HiHat",
       "file": "hihat.wav",
       "animationType": "scatter",
-      "color": "#45B7D1",
+      "color": "#2F3542",
       "keyMapping": "E"
     },
     {
       "id": "s04",
-      "label": "Clap",
+      "label": "Electro Clap",
       "file": "clap.wav",
       "animationType": "flash",
-      "color": "#F7DC6F",
+      "color": "#ECCC68",
       "keyMapping": "R"
     },
     {
       "id": "s05",
-      "label": "Tom",
+      "label": "Analog Tom",
       "file": "tom.wav",
       "animationType": "wave",
-      "color": "#BB8FCE",
+      "color": "#7B7FFA",
       "keyMapping": "T"
     },
     {
       "id": "s06",
-      "label": "Synth Pad",
-      "file": "pad.wav",
+      "label": "Soft Pad",
+      "file": "a.wav",
       "animationType": "bloom",
-      "color": "#82E0AA",
+      "color": "#7BED9F",
       "keyMapping": "A"
     },
     {
       "id": "s07",
-      "label": "Bass",
+      "label": "Sub Bass",
       "file": "bass.wav",
       "animationType": "pulse",
-      "color": "#F1948A",
+      "color": "#FF6B81",
       "keyMapping": "S"
     },
     {
       "id": "s08",
-      "label": "Bell",
+      "label": "Crystal Bell",
       "file": "bell.wav",
       "animationType": "spiral",
-      "color": "#85C1E9",
+      "color": "#1E90FF",
       "keyMapping": "D"
     },
     {
       "id": "s09",
-      "label": "Pluck",
+      "label": "FM Pluck",
       "file": "pluck.wav",
       "animationType": "orbit",
-      "color": "#F0B27A",
+      "color": "#FFA502",
       "keyMapping": "F"
     },
     {
       "id": "s10",
-      "label": "Zap",
+      "label": "Neon Zap",
       "file": "zap.wav",
       "animationType": "shatter",
-      "color": "#D7BDE2",
+      "color": "#D291BC",
       "keyMapping": "G"
     }
   ]

@@ -86,7 +86,6 @@ class CanvasViewModel(
         when (intent) {
             is CanvasIntent.Tap -> handleTap(intent)
             is CanvasIntent.KeyPress -> handleKeyPress(intent)
-            is CanvasIntent.AnimationCompleted -> removeAnimation(intent.animationId)
         }
     }
 
