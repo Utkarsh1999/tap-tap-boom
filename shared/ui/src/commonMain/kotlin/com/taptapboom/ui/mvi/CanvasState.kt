@@ -21,7 +21,9 @@ data class CanvasState(
     /** Interaction intensity [0.0 - 1.0], builds with rapid taps */
     val energy: Float = 0f,
     /** Screen displacement for dopamine hits */
-    val screenShakeOffset: Offset = Offset.Zero
+    val screenShakeOffset: Offset = Offset.Zero,
+    /** Full-screen flash intensity [0.0 - 1.0] */
+    val flashIntensity: Float = 0f
 )
 
 /**

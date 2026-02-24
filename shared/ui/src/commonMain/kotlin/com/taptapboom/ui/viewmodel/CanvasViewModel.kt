@@ -119,10 +119,11 @@ class CanvasViewModel(
         val newEnergy = (currentEnergy + ENERGY_INCREMENT).coerceIn(0f, 1f)
         hapticEngine.impact(intensity = 0.5f + (newEnergy * 0.5f))
 
-        // Highlight the pad
+        // Highlight the pad and trigger flash
         _state.update { it.copy(
             highlightedPads = it.highlightedPads + (cell to currentNanoTime() + 150_000_000L),
-            energy = newEnergy
+            energy = newEnergy,
+            flashIntensity = (0.4f + newEnergy * 0.6f).coerceIn(0f, 1f) // Flash depends on energy
         ) }
 
         val sound = triggerInteraction.getSoundById(soundId) ?: return
@@ -213,10 +214,14 @@ class CanvasViewModel(
                 )
             } else Offset.Zero
             
+            // Flash decay: approx 85% per frame (very fast)
+            val newFlash = (current.flashIntensity * 0.85f).let { if (it < 0.01f) 0f else it }
+            
             if (updatedAnimations.size == current.animations.size && 
                 updatedHighlights.size == current.highlightedPads.size &&
                 newEnergy == current.energy &&
                 shakeOffset == current.screenShakeOffset &&
+                newFlash == current.flashIntensity &&
                 updatedAnimations.zip(current.animations).all { it.first.progress == it.second.progress }) {
                 current
             } else {
@@ -224,7 +229,8 @@ class CanvasViewModel(
                     animations = updatedAnimations,
                     highlightedPads = updatedHighlights,
                     energy = newEnergy,
-                    screenShakeOffset = shakeOffset
+                    screenShakeOffset = shakeOffset,
+                    flashIntensity = newFlash
                 )
             }
         }

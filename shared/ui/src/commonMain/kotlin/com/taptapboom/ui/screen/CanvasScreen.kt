@@ -148,6 +148,14 @@ fun CanvasScreen(
                 }
                 renderAnimation(resolvedAnimation)
             }
+
+            // 4. Render Full Screen Flash (Overlays everything)
+            if (state.flashIntensity > 0f) {
+                drawRect(
+                    color = Color.White.copy(alpha = state.flashIntensity * 0.15f),
+                    size = size
+                )
+            }
         }
     }
 }
