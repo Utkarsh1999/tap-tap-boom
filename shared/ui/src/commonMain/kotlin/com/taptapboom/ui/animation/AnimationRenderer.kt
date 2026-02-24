@@ -1,0 +1,218 @@
+package com.taptapboom.ui.animation
+
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import com.taptapboom.domain.model.AnimationType
+import com.taptapboom.ui.mvi.ActiveAnimation
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
+
+/**
+ * Dispatches rendering to the appropriate animation renderer based on AnimationType.
+ * All rendering happens in the Canvas DrawScope — zero allocations on the hot path.
+ */
+object AnimationRenderer {
+
+    // Pre-allocated Stroke objects to avoid allocation in draw loops
+    private val waveStroke = Stroke(width = 3f)
+    private val orbitStroke = Stroke(width = 1f)
+    private val tempSize = Size(0f, 0f) // Reusable for scatter rects
+
+    fun DrawScope.renderAnimation(animation: ActiveAnimation) {
+        val progress = animation.progress
+        if (progress >= 1f) return
+
+        val alpha = 1f - progress
+        val color = animation.color.copy(alpha = alpha)
+
+        when (animation.type) {
+            AnimationType.RIPPLE -> drawRipple(animation.origin, progress, color)
+            AnimationType.BURST -> drawBurst(animation.origin, progress, color)
+            AnimationType.SPIRAL -> drawSpiral(animation.origin, progress, color)
+            AnimationType.WAVE -> drawWave(animation.origin, progress, color)
+            AnimationType.SCATTER -> drawScatter(animation.origin, progress, color)
+            AnimationType.PULSE -> drawPulse(animation.origin, progress, color)
+            AnimationType.BLOOM -> drawBloom(animation.origin, progress, color)
+            AnimationType.SHATTER -> drawShatter(animation.origin, progress, color)
+            AnimationType.ORBIT -> drawOrbit(animation.origin, progress, color)
+            AnimationType.FLASH -> drawFlash(progress, color)
+        }
+    }
+
+    // ─── RIPPLE ─────────────────────────────────────────────
+    private fun DrawScope.drawRipple(origin: Offset, progress: Float, color: Color) {
+        val maxRadius = size.minDimension * 0.4f
+        val radius = maxRadius * progress
+        val strokeWidth = (1f - progress) * 8f
+        drawCircle(
+            color = color,
+            radius = radius,
+            center = origin,
+            style = Stroke(width = strokeWidth)
+        )
+        // Inner ripple (delayed)
+        if (progress > 0.2f) {
+            val innerProgress = (progress - 0.2f) / 0.8f
+            val innerRadius = maxRadius * innerProgress * 0.6f
+            drawCircle(
+                color = color.copy(alpha = color.alpha * 0.5f),
+                radius = innerRadius,
+                center = origin,
+                style = Stroke(width = strokeWidth * 0.5f)
+            )
+        }
+    }
+
+    // ─── BURST ──────────────────────────────────────────────
+    private fun DrawScope.drawBurst(origin: Offset, progress: Float, color: Color) {
+        val count = 12
+        val maxDist = size.minDimension * 0.3f * progress
+        val particleRadius = (1f - progress) * 6f
+
+        for (i in 0 until count) {
+            val angle = (i * 360f / count) * (PI / 180.0)
+            val x = origin.x + (maxDist * cos(angle)).toFloat()
+            val y = origin.y + (maxDist * sin(angle)).toFloat()
+            drawCircle(color = color, radius = particleRadius, center = Offset(x, y))
+        }
+    }
+
+    // ─── SPIRAL ─────────────────────────────────────────────
+    private fun DrawScope.drawSpiral(origin: Offset, progress: Float, color: Color) {
+        val turns = 3
+        val maxRadius = size.minDimension * 0.25f
+        val dotCount = 20
+        for (i in 0 until dotCount) {
+            val t = i.toFloat() / dotCount * progress
+            val angle = t * turns * 2 * PI
+            val radius = maxRadius * t
+            val x = origin.x + (radius * cos(angle)).toFloat()
+            val y = origin.y + (radius * sin(angle)).toFloat()
+            drawCircle(
+                color = color.copy(alpha = color.alpha * (1f - t)),
+                radius = 3f,
+                center = Offset(x, y)
+            )
+        }
+    }
+
+    // ─── WAVE ───────────────────────────────────────────────
+    private fun DrawScope.drawWave(origin: Offset, progress: Float, color: Color) {
+        val rings = 3
+        val maxRadius = size.minDimension * 0.35f
+        for (i in 0 until rings) {
+            val delay = i * 0.15f
+            val ringProgress = ((progress - delay) / (1f - delay)).coerceIn(0f, 1f)
+            if (ringProgress > 0f) {
+                drawCircle(
+                    color = color.copy(alpha = color.alpha * (1f - ringProgress)),
+                    radius = maxRadius * ringProgress,
+                    center = origin,
+                    style = waveStroke
+                )
+            }
+        }
+    }
+
+    // ─── SCATTER ────────────────────────────────────────────
+    private fun DrawScope.drawScatter(origin: Offset, progress: Float, color: Color) {
+        val count = 8
+        val maxDist = size.minDimension * 0.3f
+        for (i in 0 until count) {
+            val angle = (i * 45f + progress * 30f) * (PI / 180.0)
+            val dist = maxDist * progress * (0.5f + (i % 3) * 0.2f)
+            val x = origin.x + (dist * cos(angle)).toFloat()
+            val y = origin.y + (dist * sin(angle)).toFloat()
+            val rectSize = (1f - progress) * 12f
+            drawRect(
+                color = color,
+                topLeft = Offset(x - rectSize / 2, y - rectSize / 2),
+                size = Size(rectSize, rectSize)
+            )
+        }
+    }
+
+    // ─── PULSE ──────────────────────────────────────────────
+    private fun DrawScope.drawPulse(origin: Offset, progress: Float, color: Color) {
+        // Pulsing filled circle that grows and fades
+        val maxRadius = size.minDimension * 0.15f
+        val scale = if (progress < 0.5f) progress * 2f else 1f
+        val alpha = if (progress < 0.5f) color.alpha else color.alpha * (1f - (progress - 0.5f) * 2f)
+        drawCircle(
+            color = color.copy(alpha = alpha.coerceAtLeast(0f)),
+            radius = maxRadius * scale,
+            center = origin
+        )
+    }
+
+    // ─── BLOOM ──────────────────────────────────────────────
+    private fun DrawScope.drawBloom(origin: Offset, progress: Float, color: Color) {
+        val petals = 6
+        val maxRadius = size.minDimension * 0.2f * progress
+        for (i in 0 until petals) {
+            val angle = (i * 60f + progress * 45f) * (PI / 180.0)
+            val x = origin.x + (maxRadius * cos(angle)).toFloat()
+            val y = origin.y + (maxRadius * sin(angle)).toFloat()
+            drawCircle(
+                color = color,
+                radius = (1f - progress) * 10f,
+                center = Offset(x, y)
+            )
+        }
+        // Center dot
+        drawCircle(color = color, radius = (1f - progress) * 6f, center = origin)
+    }
+
+    // ─── SHATTER ────────────────────────────────────────────
+    private fun DrawScope.drawShatter(origin: Offset, progress: Float, color: Color) {
+        val fragments = 10
+        val maxDist = size.minDimension * 0.35f
+        for (i in 0 until fragments) {
+            val seed = (i * 137.5f) // Golden angle scatter
+            val angle = seed * (PI / 180.0)
+            val dist = maxDist * progress * (0.3f + (i % 4) * 0.2f)
+            val x = origin.x + (dist * cos(angle)).toFloat()
+            val y = origin.y + (dist * sin(angle)).toFloat() + progress * 40f // gravity
+            val triSize = (1f - progress) * 8f
+            drawCircle(color = color, radius = triSize, center = Offset(x, y))
+        }
+    }
+
+    // ─── ORBIT ──────────────────────────────────────────────
+    private fun DrawScope.drawOrbit(origin: Offset, progress: Float, color: Color) {
+        val orbiters = 4
+        val orbitRadius = size.minDimension * 0.15f * (1f + progress * 0.5f)
+        for (i in 0 until orbiters) {
+            val baseAngle = i * 90f
+            val angle = (baseAngle + progress * 720f) * (PI / 180.0)
+            val x = origin.x + (orbitRadius * cos(angle)).toFloat()
+            val y = origin.y + (orbitRadius * sin(angle)).toFloat()
+            drawCircle(
+                color = color,
+                radius = (1f - progress) * 5f,
+                center = Offset(x, y)
+            )
+        }
+        // Center ring
+        drawCircle(
+            color = color.copy(alpha = color.alpha * 0.3f),
+            radius = orbitRadius,
+            center = origin,
+            style = orbitStroke
+        )
+    }
+
+    // ─── FLASH ──────────────────────────────────────────────
+    private fun DrawScope.drawFlash(progress: Float, color: Color) {
+        // Full-screen flash that fades quickly
+        val alpha = if (progress < 0.1f) progress * 10f else (1f - progress) * 1.1f
+        drawRect(
+            color = color.copy(alpha = alpha.coerceIn(0f, 0.6f)),
+            size = size
+        )
+    }
+}

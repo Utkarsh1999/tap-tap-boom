@@ -1,0 +1,87 @@
+{
+  "packId": "synth-basics-v1",
+  "packName": "Synth Basics",
+  "version": 1,
+  "sounds": [
+    {
+      "id": "s01",
+      "label": "Kick",
+      "file": "kick.wav",
+      "animationType": "ripple",
+      "color": "#FF6B6B",
+      "keyMapping": "Q"
+    },
+    {
+      "id": "s02",
+      "label": "Snare",
+      "file": "snare.wav",
+      "animationType": "burst",
+      "color": "#4ECDC4",
+      "keyMapping": "W"
+    },
+    {
+      "id": "s03",
+      "label": "HiHat",
+      "file": "hihat.wav",
+      "animationType": "scatter",
+      "color": "#45B7D1",
+      "keyMapping": "E"
+    },
+    {
+      "id": "s04",
+      "label": "Clap",
+      "file": "clap.wav",
+      "animationType": "flash",
+      "color": "#F7DC6F",
+      "keyMapping": "R"
+    },
+    {
+      "id": "s05",
+      "label": "Tom",
+      "file": "tom.wav",
+      "animationType": "wave",
+      "color": "#BB8FCE",
+      "keyMapping": "T"
+    },
+    {
+      "id": "s06",
+      "label": "Synth Pad",
+      "file": "pad.wav",
+      "animationType": "bloom",
+      "color": "#82E0AA",
+      "keyMapping": "A"
+    },
+    {
+      "id": "s07",
+      "label": "Bass",
+      "file": "bass.wav",
+      "animationType": "pulse",
+      "color": "#F1948A",
+      "keyMapping": "S"
+    },
+    {
+      "id": "s08",
+      "label": "Bell",
+      "file": "bell.wav",
+      "animationType": "spiral",
+      "color": "#85C1E9",
+      "keyMapping": "D"
+    },
+    {
+      "id": "s09",
+      "label": "Pluck",
+      "file": "pluck.wav",
+      "animationType": "orbit",
+      "color": "#F0B27A",
+      "keyMapping": "F"
+    },
+    {
+      "id": "s10",
+      "label": "Zap",
+      "file": "zap.wav",
+      "animationType": "shatter",
+      "color": "#D7BDE2",
+      "keyMapping": "G"
+    }
+  ]
+}

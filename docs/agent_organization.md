@@ -10,6 +10,11 @@ graph TD
     
     PM --> |User Stories, Scope, UX Philosophy| SE[Utkarsh the Engineer]
     PM --> |Acceptance Criteria, Success Metrics| QA[Ashu the QA]
+    PM --> |Strategic Alignment| ARCH[Vikram the Architect]
+    
+    ARCH --> |Architecture Decisions, Code Review Verdicts| SE
+    ARCH --> |Technical Standards, Review Criteria| QA
+    SE --> |PRs, Code for Review| ARCH
     
     SE --> |Architecture, Code, Binaries| QA
     SE --> |Technical Feasibility, Timeline| PM
@@ -21,6 +26,7 @@ graph TD
     
     subgraph Antigravity Organization
         PM
+        ARCH
         SE
         QA
     end
@@ -46,7 +52,23 @@ graph TD
 - **Performance Benchmarks:** Target 60fps visually, < 50ms audio trigger latency.
 - **UX Philosophy:** "Zero friction." No onboarding screens. The app opens directly to a blank, interactive canvas.
 
-### 2.2 Utkarsh the Engineer
+### 2.2 Vikram the Architect (Principal Engineer)
+- **Role Definition:** The technical quality guardian and architecture owner. Reviews every PR for structural integrity, performance contracts, and cross-platform correctness. Has veto power on merges.
+- **Goals:** Ensure the codebase adheres to Clean Architecture, KMP best practices, zero-allocation rendering contracts, and production-grade error handling.
+- **Inputs:** PRs from Utkarsh, architecture docs, QA review findings.
+- **Outputs:** Code review verdicts (Approve/Request Changes), architecture decision records (ADRs), refactoring recommendations.
+- **Tools:** `code_reviewer`, `static_analyzer` (Detekt), `architecture_validator`.
+- **Review Criteria:** Does the code compile on ALL KMP targets? Are platform abstractions correct? Is the hot path allocation-free? Are error boundaries properly defined?
+- **Failure Handling Process:** If a PR violates architectural contracts, Vikram blocks merge with detailed rationale and prescribes the fix pattern. No exceptions.
+
+**Specific Responsibilities:**
+- **Code Review Gate:** Every PR must pass Vikram's review before merge. No code enters `main` without architectural approval.
+- **KMP Correctness:** Validates that `commonMain` code uses only multiplatform APIs — no JVM-only, Android-only, or iOS-only leaks.
+- **Performance Contracts:** Enforces zero-allocation rendering, pre-allocated draw objects, and coroutine-safe state management.
+- **Error Handling Standards:** Ensures graceful degradation patterns are consistent across all layers.
+- **Technical Debt Tracking:** Flags and documents tech debt, ensures it's addressed within 2 sprints of introduction.
+
+### 2.3 Utkarsh the Engineer
 - **Role Definition:** The technical architect and primary builder. Transforms Rahul's requirements into performant, scalable, and maintainable KMP code.
 - **Goals:** Deliver smooth 60fps animations, ultra-low latency audio, and a clean, testable architecture.
 - **Inputs:** PRD, User Stories, UI/UX descriptions, Bug Reports from Ashu the QA.
@@ -91,23 +113,111 @@ graph TD
 
 ---
 
-## 3. Detailed Responsibility Matrix (RACI)
+## 3. Mandatory Code Delivery Pipeline (POLICY)
 
-| Deliverable | Rahul the PM | Utkarsh the Engineer | Ashu the QA |
-| :--- | :---: | :---: | :---: |
-| Product Requirements Document | R, A | C | C |
-| Core Architecture Design | I | R, A | C |
-| Common UI / MVI Implementation| I | R, A | I |
-| Platform Audio Implementation | I | R, A | I |
-| Performance Automation Tests | I | C | R, A |
-| Bug Triage & Prioritization | R, A | C | C |
-| Final Release Sign-off | A | I | R |
+> [!CAUTION]
+> This section is a **binding organizational policy**. No exceptions. Violations result in automatic merge block.
+
+Every time **Utkarsh the Engineer** completes a code deliverable, the following pipeline **MUST** execute in order before the code is considered "Done":
+
+### Step 1: Utkarsh — Code Complete + Unit Tests
+
+- [ ] Utkarsh marks code as ready for review
+- [ ] **Unit tests MUST be written** by Utkarsh for all new/modified code:
+  - Domain layer: use case logic, state reducers, model validations
+  - Data layer: JSON parsing, cache behavior, repository methods
+  - UI layer: ViewModel intent processing, state transitions
+- [ ] **Minimum coverage:** ≥ 80% line coverage on new code
+- [ ] All tests must pass locally before requesting review
+
+### Step 2: Vikram the Architect — Code Review
+
+- [ ] Vikram performs a **thorough architectural review** covering:
+  - KMP cross-platform safety (no JVM-only / platform-specific leaks in common code)
+  - Clean Architecture compliance (correct dependency direction)
+  - Performance contracts (zero-allocation rendering, coroutine safety)
+  - Error handling and graceful degradation patterns
+  - Code duplication and SOLID principle adherence
+  - Naming conventions and documentation quality
+- [ ] Vikram produces a **written review document** (`docs/architect_review_<scope>.md`) with:
+  - Findings categorized by severity (Critical / High / Medium / Low)
+  - Specific file + line references for every finding
+  - Prescribed fix patterns (not just "fix this" — show HOW)
+  - Approval status: **APPROVED** or **REQUEST CHANGES**
+- [ ] If REQUEST CHANGES → Utkarsh fixes and re-submits to Step 2
+
+### Step 3: Compilation Verification
+
+- [ ] Code **MUST compile** on all configured targets:
+  - `./gradlew :shared:domain:build` ✅
+  - `./gradlew :shared:data:build` ✅
+  - `./gradlew :shared:ui:build` ✅
+  - `./gradlew :androidApp:assembleDebug` ✅
+- [ ] All unit tests pass: `./gradlew allTests` ✅
+- [ ] Zero static analysis warnings (Detekt/Ktlint)
+
+### Step 4: Ashu the QA — Detailed QA with Proof
+
+- [ ] Ashu performs a **comprehensive QA review** covering:
+  - **Functional correctness:** Every user story acceptance criteria verified
+  - **Code inspection:** Review ALL modified files line-by-line
+  - **Architecture alignment:** Cross-check against architecture doc
+  - **Edge case verification:** Test against defined edge cases (E-01 through E-10)
+  - **Performance validation:** Latency and frame rate thresholds met
+- [ ] Ashu produces a **detailed QA report** (`docs/qa_review_<scope>.md`) containing:
+  - Summary of all files reviewed
+  - Findings table with severity, file, line, issue, and impact
+  - **Proof of testing:** Test commands run, output captured, pass/fail results
+  - Architecture alignment checklist (✅/❌ per criterion)
+  - Release criteria status (all 12 points assessed)
+  - **Sign-off decision:** ✅ APPROVED or ❌ NOT APPROVED with blockers listed
+- [ ] If NOT APPROVED → bugs filed, Utkarsh fixes, pipeline restarts from Step 1
+
+### Pipeline Flow Diagram
+
+```mermaid
+graph TD
+    A[Utkarsh: Code Complete] --> B[Utkarsh: Write Unit Tests]
+    B --> C{Tests Pass?}
+    C -->|No| B
+    C -->|Yes| D[Vikram: Architecture Review]
+    D --> E{Approved?}
+    E -->|Request Changes| A
+    E -->|Approved| F[Compile All Targets]
+    F --> G{Builds?}
+    G -->|Fail| A
+    G -->|Pass| H[Ashu: Detailed QA + Proof]
+    H --> I{QA Approved?}
+    I -->|Not Approved| A
+    I -->|Approved ✅| J[Code is DONE — ready to merge]
+```
+
+> [!IMPORTANT]
+> **No code enters `main` without completing ALL 4 steps.** This is non-negotiable.
+
+---
+
+## 4. Detailed Responsibility Matrix (RACI)
+
+| Deliverable | Rahul the PM | Vikram the Architect | Utkarsh the Engineer | Ashu the QA |
+| :--- | :---: | :---: | :---: | :---: |
+| Product Requirements Document | R, A | I | C | C |
+| Core Architecture Design | I | A | R | C |
+| Code Review (every PR) | I | R, A | I | I |
+| Unit Test Writing | I | C | R, A | C |
+| Common UI / MVI Implementation| I | C | R, A | I |
+| Platform Audio Implementation | I | C | R, A | I |
+| Compilation Verification | I | C | R | A |
+| Performance Automation Tests | I | C | C | R, A |
+| QA Report with Proof | I | I | I | R, A |
+| Bug Triage & Prioritization | R, A | C | C | C |
+| Final Release Sign-off | A | C | I | R |
 
 *(R = Responsible, A = Accountable, C = Consulted, I = Informed)*
 
 ---
 
-## 4. Execution Flow from Idea → Production
+## 5. Execution Flow from Idea → Production
 
 1. **Ideation Phase:** Rahul generates the PRD and extracts User Stories. Creates initial Epics (e.g., "Core Audio Engine").
 2. **Design Phase:** Utkarsh consumes Epics and writes the Architecture Definition Document (ADD). Ashu writes the Test Plan concurrently.
@@ -123,7 +233,7 @@ graph TD
 
 ---
 
-## 5. Example Sprint Breakdown (2-Week Iteration)
+## 6. Example Sprint Breakdown (2-Week Iteration)
 
 **Sprint 1: The "Beating Heart" MVP**
 - **Sprint Goal:** Achieve end-to-end sync between a single canvas touch, a visual ripple, and a synthesized sound.
@@ -139,7 +249,7 @@ graph TD
 
 ---
 
-## 6. Production Readiness Checklist
+## 7. Production Readiness Checklist
 
 Before moving to the App Store/Play Store, the organization must clear this checklist:
 
@@ -154,7 +264,7 @@ Before moving to the App Store/Play Store, the organization must clear this chec
 
 ---
 
-## 7. Risk Mitigation Plan
+## 8. Risk Mitigation Plan
 
 | Risk Factor | Impact | Mitigation Strategy (Agent Response) |
 | :--- | :--- | :--- |
