@@ -26,11 +26,11 @@ object AnimationRenderer {
         val progress = animation.progress
         if (progress >= 1f) return
 
-        val alpha = 1f - progress
+        val alpha = (1f - progress).coerceIn(0f, 1f)
         val color = animation.color.copy(alpha = alpha)
 
-        // For full-screen animations, we use screen center as origin and scale up dimensions
-        val origin = if (animation.isFullScreen) center else animation.origin
+        // Anchoring logic: Use tap point as origin, but center if it's a keyboard sentinel (-1, -1)
+        val origin = if (animation.origin.x < 0f && animation.origin.y < 0f) center else animation.origin
         val scale = if (animation.isFullScreen) 2.5f else 1.0f
 
         when (animation.type) {
@@ -44,6 +44,8 @@ object AnimationRenderer {
             AnimationType.SHATTER -> drawShatter(origin, progress, color, scale)
             AnimationType.ORBIT -> drawOrbit(origin, progress, color, scale)
             AnimationType.FLASH -> drawFlash(progress, color)
+            AnimationType.MIRROR -> drawMirror(origin, progress, color)
+            AnimationType.SLICE -> drawSlice(origin, progress, color)
         }
     }
 
@@ -217,5 +219,78 @@ object AnimationRenderer {
             color = color.copy(alpha = alpha.coerceIn(0f, 0.6f)),
             size = size
         )
+    }
+
+    // ─── MIRROR ─────────────────────────────────────────────
+    private fun DrawScope.drawMirror(origin: Offset, progress: Float, color: Color) {
+        // 4-axis symmetry relative to center
+        val centerX = size.width / 2f
+        val centerY = size.height / 2f
+        
+        // Use a stylized ripple/burst hybrid
+        val count = 8
+        val maxDist = size.minDimension * 0.2f * progress
+        val dotRadius = (1f - progress) * 5f
+
+        // Mirror across 4 quadrants
+        val quadrants = listOf(
+            Offset(1f, 1f),
+            Offset(-1f, 1f),
+            Offset(1f, -1f),
+            Offset(-1f, -1f)
+        )
+
+        quadrants.forEach { quad ->
+            for (i in 0 until count) {
+                val angle = (i * 360f / count + progress * 90f) * (PI / 180.0)
+                val rx = (maxDist * cos(angle)).toFloat()
+                val ry = (maxDist * sin(angle)).toFloat()
+                
+                // Offset from the quad-adjusted origin
+                val x = (origin.x - centerX) * quad.x + centerX + rx
+                val y = (origin.y - centerY) * quad.y + centerY + ry
+                
+                drawCircle(color = color, radius = dotRadius, center = Offset(x, y))
+            }
+        }
+    }
+
+    // ─── SLICE ──────────────────────────────────────────────
+    private fun DrawScope.drawSlice(origin: Offset, progress: Float, color: Color) {
+        // Partition the screen through the tap point
+        val isVertical = size.width > size.height
+        val alpha = if (progress < 0.2f) progress * 5f else (1f - progress) * 0.8f
+        
+        if (isVertical) {
+            // Horizontal slice moving outwards
+            val thickness = progress * size.height * 0.5f
+            drawRect(
+                color = color.copy(alpha = alpha.coerceIn(0f, 0.4f)),
+                topLeft = Offset(0f, origin.y - thickness / 2),
+                size = Size(size.width, thickness)
+            )
+            // Accent line
+            drawLine(
+                color = Color.White.copy(alpha = alpha),
+                start = Offset(0f, origin.y),
+                end = Offset(size.width, origin.y),
+                strokeWidth = 2f
+            )
+        } else {
+            // Vertical slice
+            val thickness = progress * size.width * 0.5f
+            drawRect(
+                color = color.copy(alpha = alpha.coerceIn(0f, 0.4f)),
+                topLeft = Offset(origin.x - thickness / 2, 0f),
+                size = Size(thickness, size.height)
+            )
+            // Accent line
+            drawLine(
+                color = Color.White.copy(alpha = alpha),
+                start = Offset(origin.x, 0f),
+                end = Offset(origin.x, size.height),
+                strokeWidth = 2f
+            )
+        }
     }
 }

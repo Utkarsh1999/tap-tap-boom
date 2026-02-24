@@ -63,6 +63,8 @@ V1.0 — "First Note" (MVP)
 
 V2.0 — "Crescendo"
 ├── 5 additional animation styles
+├── Symmetry System: Mirror and Split Screen global effects
+├── Relative Global Effects: Tap-point anchored full-screen explosions
 ├── 2 downloadable sound packs
 ├── Haptic feedback on iOS
 ├── Accessibility (VoiceOver labels)
@@ -176,8 +178,11 @@ V4.0 — "Encore"
 ## 10. Open Questions
 
 1. Should V1 include a subtle "tap anywhere to start" hint on first launch, or truly zero UI?
+Ans. Zero UI
 2. Should we ship a "reset canvas" gesture (e.g., long press)?
+Ans. No
 3. Haptic feedback on Android in V1 or defer to V2?
+Ans. No
 
 ---
 

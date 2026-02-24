@@ -39,9 +39,11 @@ class ModelSerializationTest {
     @Test
     fun `AnimationType enum values match expected serialized names`() {
         val types = AnimationType.entries
-        assertEquals(10, types.size)
+        assertEquals(12, types.size)
         assertEquals(AnimationType.RIPPLE, types[0])
         assertEquals(AnimationType.FLASH, types[9])
+        assertEquals(AnimationType.MIRROR, types[10])
+        assertEquals(AnimationType.SLICE, types[11])
     }
 
     @Test

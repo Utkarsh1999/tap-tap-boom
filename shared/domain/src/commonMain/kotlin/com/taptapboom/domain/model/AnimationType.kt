@@ -18,5 +18,7 @@ enum class AnimationType {
     @SerialName("bloom") BLOOM,
     @SerialName("shatter") SHATTER,
     @SerialName("orbit") ORBIT,
-    @SerialName("flash") FLASH
+    @SerialName("flash") FLASH,
+    @SerialName("mirror") MIRROR,
+    @SerialName("slice") SLICE
 }
