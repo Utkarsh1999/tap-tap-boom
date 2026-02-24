@@ -155,20 +155,32 @@ class CanvasViewModel(
         val soundId = sound.id
         analyticsLogger.logSoundPlayed(soundId)
 
-        val animation = ActiveAnimation(
+        val localAnim = ActiveAnimation(
             id = uuid4().toString(),
             type = sound.animationType,
             origin = origin,
             color = parseColor(sound.color),
+            isFullScreen = false,
             progress = 0f,
             startTimeNanos = currentNanoTime()
+        )
+
+        val fullScreenAnim = ActiveAnimation(
+            id = uuid4().toString(),
+            type = sound.animationType,
+            origin = origin,
+            color = parseColor(sound.color),
+            isFullScreen = true,
+            progress = 0f,
+            startTimeNanos = currentNanoTime(),
+            durationMs = 1200L // Slightly longer for "epic" feel
         )
 
         _state.update { current ->
             var nextHue = (current.backgroundHue + 20f) % 360f
             if (nextHue in 40f..160f) nextHue = 180f
             current.copy(
-                animations = current.animations + animation,
+                animations = current.animations + localAnim + fullScreenAnim,
                 backgroundHue = nextHue
             )
         }

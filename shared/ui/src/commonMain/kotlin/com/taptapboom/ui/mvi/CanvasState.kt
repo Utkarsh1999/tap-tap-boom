@@ -34,6 +34,7 @@ data class ActiveAnimation(
     val type: AnimationType,
     val origin: Offset,
     val color: Color,
+    val isFullScreen: Boolean = false,
     val progress: Float = 0f,
     val startTimeNanos: Long = 0L,
     val durationMs: Long = 800L

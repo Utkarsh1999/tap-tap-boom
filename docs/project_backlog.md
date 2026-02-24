@@ -38,6 +38,17 @@ This document tracks the execution flow, epics, and task assignments for the **t
 - [x] **Task 7.2:** Design "Dopamine Hits": Screen shake and color intensity spikes.
 - [x] **Task 7.3:** Add "Combo Meter" logic for scaling interaction energy.
 - [x] **Task 7.4:** Audio detuning for organic feel during rapid patterns.
+- [x] **Task 7.6:** Hotfix CI Pipeline: Upgrade to JDK 21.
+
+## Epic 8: Visual Overdose (Full Screen Effects) ✅
+- [x] **Task 8.1:** Design full-screen "Flash Pulses" for high-energy interaction.
+- [x] **Task 8.2:** Implement intensity decay logic in the ViewModel.
+- [x] **Task 8.3:** Implement Pulse rendering in the UI layer.
+
+## Epic 9: Full Screen Orchestration ✅ (Branch: `feature/full-screen-animations`)
+- [x] **Task 9.1:** Implement dual-layer animation system (Local + Global).
+- [x] **Task 9.2:** Scale-aware animation rendering for all 10 types.
+- [x] **Task 9.3:** Verify performance and visual overlap on feature branch.
 
 ---
 
