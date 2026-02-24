@@ -20,8 +20,9 @@ interface AudioEngine {
      * Play a previously preloaded sound. Fire-and-forget, non-blocking.
      * Must be safe to call from any thread.
      * @param handle the ID returned from preload()
+     * @param pitch playback rate/pitch: 0.5 (half) to 2.0 (double). 1.0 is normal.
      */
-    fun play(handle: Int)
+    fun play(handle: Int, pitch: Float = 1.0f)
 
     /**
      * Stop all currently playing sounds immediately.

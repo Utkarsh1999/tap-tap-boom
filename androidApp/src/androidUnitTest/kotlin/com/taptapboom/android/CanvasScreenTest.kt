@@ -46,7 +46,7 @@ class CanvasScreenTest {
 
         val fakeAudioEngine = object : AudioEngine {
             override suspend fun preload(assetPath: String) = 1
-            override fun play(handle: Int) {}
+            override fun play(handle: Int, pitch: Float) {}
             override fun stopAll() {}
             override fun release() {}
         }
@@ -57,11 +57,18 @@ class CanvasScreenTest {
             override fun logInteraction(pointersCount: Int) {}
         }
 
+        val fakeHapticEngine = object : com.taptapboom.domain.haptic.HapticEngine {
+            override fun impact(intensity: Float) {}
+            override fun vibrate(durationMs: Long) {}
+            override fun release() {}
+        }
+
         return CanvasViewModel(
             triggerInteraction = TriggerInteractionUseCase(fakeRepo),
             preloadSounds = PreloadSoundsUseCase(fakeRepo, fakeAudioEngine),
             audioEngine = fakeAudioEngine,
-            analyticsLogger = fakeAnalyticsLogger
+            analyticsLogger = fakeAnalyticsLogger,
+            hapticEngine = fakeHapticEngine
         )
     }
 
@@ -72,6 +79,9 @@ class CanvasScreenTest {
         composeTestRule.setContent {
             CanvasScreen(viewModel = viewModel)
         }
+
+        // Wait for sound pack to load and grid to initialize
+        composeTestRule.waitUntil(5000) { !viewModel.state.value.isLoading }
 
         // Simulate 10 simultaneous touches simulating edge case E-01
         composeTestRule.onRoot().performTouchInput {

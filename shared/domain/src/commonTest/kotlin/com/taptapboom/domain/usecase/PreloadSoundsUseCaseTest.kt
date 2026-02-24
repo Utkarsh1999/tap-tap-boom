@@ -38,7 +38,7 @@ class PreloadSoundsUseCaseTest {
                 preloadCount++
                 return preloadCount // Return incrementing handles
             }
-            override fun play(handle: Int) {}
+            override fun play(handle: Int, pitch: Float) {}
             override fun stopAll() {}
             override fun release() {}
         }
@@ -64,7 +64,7 @@ class PreloadSoundsUseCaseTest {
 
         val engine = object : AudioEngine {
             override suspend fun preload(assetPath: String) = -1
-            override fun play(handle: Int) {}
+            override fun play(handle: Int, pitch: Float) {}
             override fun stopAll() {}
             override fun release() {}
         }
@@ -90,7 +90,7 @@ class PreloadSoundsUseCaseTest {
                 preloadedPaths.add(assetPath)
                 return 1
             }
-            override fun play(handle: Int) {}
+            override fun play(handle: Int, pitch: Float) {}
             override fun stopAll() {}
             override fun release() {}
         }

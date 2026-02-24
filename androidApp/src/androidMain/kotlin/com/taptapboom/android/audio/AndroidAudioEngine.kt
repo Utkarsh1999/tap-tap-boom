@@ -62,10 +62,10 @@ class AndroidAudioEngine(
         }
     }
 
-    override fun play(handle: Int) {
+    override fun play(handle: Int, pitch: Float) {
         if (handle < 0) return // Skip invalid handles from failed preloads
-        // Fire-and-forget: play at full volume, normal rate, no loop
-        soundPool.play(handle, 1.0f, 1.0f, 1, 0, 1.0f)
+        // Fire-and-forget: play at full volume, 1x priority, variable rate
+        soundPool.play(handle, 1.0f, 1.0f, 1, 0, pitch.coerceIn(0.5f, 2.0f))
     }
 
     override fun stopAll() {

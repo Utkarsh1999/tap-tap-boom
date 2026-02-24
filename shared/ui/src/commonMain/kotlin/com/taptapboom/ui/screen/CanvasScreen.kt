@@ -12,8 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import com.taptapboom.ui.animation.AnimationRenderer.renderAnimation
 import com.taptapboom.ui.mvi.CanvasIntent
 import com.taptapboom.ui.viewmodel.CanvasViewModel
@@ -56,20 +58,45 @@ fun CanvasScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(bgColor)
+            .graphicsLayer {
+                // Apply Screen Shake
+                translationX = state.screenShakeOffset.x
+                translationY = state.screenShakeOffset.y
+            }
             .pointerInput(Unit) {
-                // Multi-touch support: captures all pointer events
                 awaitPointerEventScope {
                     while (true) {
                         val event = awaitPointerEvent()
-                        if (event.type == PointerEventType.Press) {
-                            event.changes.forEach { change ->
-                                viewModel.onIntent(
-                                    CanvasIntent.Tap(
-                                        x = change.position.x,
-                                        y = change.position.y,
-                                        pointerId = change.id.value.toInt()
+                        val size = this.size
+                        
+                        when (event.type) {
+                            PointerEventType.Press -> {
+                                event.changes.forEach { change ->
+                                    viewModel.onIntent(
+                                        CanvasIntent.TapPad(
+                                            x = change.position.x,
+                                            y = change.position.y,
+                                            screenWidth = size.width.toFloat(),
+                                            screenHeight = size.height.toFloat(),
+                                            pointerId = change.id.value.toInt()
+                                        )
                                     )
-                                )
+                                }
+                            }
+                            PointerEventType.Move -> {
+                                // Rotate sound on drag
+                                event.changes.forEach { change ->
+                                    if (change.positionChange().getDistance() > 10f) {
+                                        viewModel.onIntent(
+                                            CanvasIntent.RotateSound(
+                                                x = change.position.x,
+                                                y = change.position.y,
+                                                screenWidth = size.width.toFloat(),
+                                                screenHeight = size.height.toFloat()
+                                            )
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
@@ -77,7 +104,42 @@ fun CanvasScreen(
             }
     ) {
         Canvas(modifier = Modifier.fillMaxSize()) {
-            // Map key press sentinel origin (-1,-1) to screen center
+            val cellWidth = size.width / state.gridCols
+            val cellHeight = size.height / state.gridRows
+
+            // 1. Render Grid Highlights (from state)
+            state.highlightedPads.forEach { (cell, _) ->
+                val (row, col) = cell
+                val intensity = 0.1f + (state.energy * 0.4f)
+                drawRect(
+                    color = Color.White.copy(alpha = intensity),
+                    topLeft = Offset(col * cellWidth, row * cellHeight),
+                    size = androidx.compose.ui.geometry.Size(cellWidth, cellHeight)
+                )
+            }
+
+            // 2. Render Grid Lines
+            val gridAlpha = 0.05f + (state.energy * 0.15f)
+            for (i in 1 until state.gridCols) {
+                val x = i * cellWidth
+                drawLine(
+                    color = Color.White.copy(alpha = gridAlpha),
+                    start = Offset(x, 0f),
+                    end = Offset(x, size.height),
+                    strokeWidth = 1f
+                )
+            }
+            for (i in 1 until state.gridRows) {
+                val y = i * cellHeight
+                drawLine(
+                    color = Color.White.copy(alpha = gridAlpha),
+                    start = Offset(0f, y),
+                    end = Offset(size.width, y),
+                    strokeWidth = 1f
+                )
+            }
+
+            // 3. Render Animations
             state.animations.forEach { animation ->
                 val resolvedAnimation = if (animation.origin.x < 0f && animation.origin.y < 0f) {
                     animation.copy(origin = Offset(size.width / 2f, size.height / 2f))

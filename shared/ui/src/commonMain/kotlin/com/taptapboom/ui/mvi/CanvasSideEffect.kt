@@ -8,5 +8,5 @@ sealed interface CanvasSideEffect {
     /**
      * Trigger audio playback for a preloaded sound.
      */
-    data class PlaySound(val handle: Int) : CanvasSideEffect
+    data class PlaySound(val handle: Int, val pitch: Float = 1.0f) : CanvasSideEffect
 }

@@ -14,20 +14,19 @@ class TriggerInteractionUseCase(
 ) {
     /**
      * Map an interaction event to its sound.
-     * Key-press events use key mapping; touch events use position-based hashing.
+     * Keep legacy spatial hashing as a fallback for non-grid interactions if needed.
      */
     operator fun invoke(event: InteractionEvent): Sound? {
-        // Key press → direct key mapping
-        event.key?.let { key ->
-            return soundRepository.getSoundForKey(key.uppercase())
-        }
-
-        // Touch event → hash position into sound index for variety
-        // Divides screen into regions so different tap positions trigger different sounds
+        if (event.key != null) return getSoundForKey(event.key.uppercase())
+        
         val sounds = soundRepository.getAllSounds()
         if (sounds.isEmpty()) return null
         val hash = abs((event.x * 7 + event.y * 13 + event.pointerId * 31).toInt())
         val index = hash % sounds.size
         return soundRepository.getSoundByIndex(index)
     }
+
+    fun getSoundById(id: String): Sound? = soundRepository.getAllSounds().find { it.id == id }
+
+    fun getSoundForKey(key: String): Sound? = soundRepository.getSoundForKey(key)
 }
