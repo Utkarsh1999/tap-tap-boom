@@ -45,10 +45,15 @@ This document tracks the execution flow, epics, and task assignments for the **t
 - [x] **Task 8.2:** Implement intensity decay logic in the ViewModel.
 - [x] **Task 8.3:** Implement Pulse rendering in the UI layer.
 
-## Epic 9: Full Screen Orchestration ✅ (Branch: `feature/full-screen-animations`)
+## Epic 9: Full Screen Orchestration ✅
 - [x] **Task 9.1:** Implement dual-layer animation system (Local + Global).
 - [x] **Task 9.2:** Scale-aware animation rendering for all 10 types.
 - [x] **Task 9.3:** Verify performance and visual overlap on feature branch.
+
+## Epic 11: Play Store Automation ✅
+- [x] **Task 11.1:** Setup signed release builds in Gradle.
+- [x] **Task 11.2:** Configure `release.yml` for automated Play Store uploads.
+- [x] **Task 11.3:** Merge all experimental features into `main`.
 
 ---
 

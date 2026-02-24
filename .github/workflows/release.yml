@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  workflow_dispatch: # Allow manual trigger
+  push:
+    tags:
+      - 'v*' # Trigger on version tags (e.g. v1.0.0)
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.RELEASE_KEYSTORE }}" | base64 --decode > androidApp/release.jks
+
+      - name: Build Release Bundle
+        run: ./gradlew :androidApp:bundleRelease
+        env:
+          RELEASE_KEYSTORE_PATH: "release.jks"
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+          RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+
+      - name: Upload to Play Store
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonKeyData: ${{ secrets.PLAY_STORE_JSON }}
+          packageName: com.taptapboom.android
+          releaseFiles: androidApp/build/outputs/bundle/release/*.aab
+          track: internal # Default to internal testing for safety
+          status: completed
