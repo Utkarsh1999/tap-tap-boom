@@ -132,9 +132,14 @@ class CanvasViewModel(
         )
 
         _state.update { current ->
+            var nextHue = (current.backgroundHue + 20f) % 360f
+            // Skip yellow/green range (40 - 160) for a more premium cyber/dark aesthetic
+            if (nextHue in 40f..160f) {
+                nextHue = 180f // Jump to Cyan/Blue
+            }
             current.copy(
                 animations = current.animations + animation,
-                backgroundHue = (current.backgroundHue + 15f) % 360f
+                backgroundHue = nextHue
             )
         }
 

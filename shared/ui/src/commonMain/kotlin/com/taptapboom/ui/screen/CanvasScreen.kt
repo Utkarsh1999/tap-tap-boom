@@ -47,9 +47,9 @@ fun CanvasScreen(
         }
     }
 
-    // Background color from hue
+    // Background color from hue: using lower saturation and lightness for a premium dark feel
     val bgColor = remember(state.backgroundHue) {
-        Color.hsl(state.backgroundHue, 0.15f, 0.08f)
+        Color.hsl(state.backgroundHue, 0.25f, 0.04f)
     }
 
     Box(

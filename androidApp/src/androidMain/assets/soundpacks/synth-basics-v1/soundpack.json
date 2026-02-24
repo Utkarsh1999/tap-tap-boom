@@ -1,11 +1,11 @@
 {
-  "packId": "synth-basics-v1",
-  "packName": "Synth Basics",
+  "packId": "drum-kit-v1",
+  "packName": "Premium Percussion",
   "version": 1,
   "sounds": [
     {
       "id": "s01",
-      "label": "Deep Kick",
+      "label": "Kick",
       "file": "kick.wav",
       "animationType": "ripple",
       "color": "#FF4757",
@@ -13,7 +13,7 @@
     },
     {
       "id": "s02",
-      "label": "Crisp Snare",
+      "label": "Snare",
       "file": "snare.wav",
       "animationType": "burst",
       "color": "#70A1FF",
@@ -21,67 +21,67 @@
     },
     {
       "id": "s03",
-      "label": "Tight HiHat",
-      "file": "hihat.wav",
+      "label": "HiHat (C)",
+      "file": "hihat_closed.wav",
       "animationType": "scatter",
-      "color": "#2F3542",
+      "color": "#A4B0BE",
       "keyMapping": "E"
     },
     {
       "id": "s04",
-      "label": "Electro Clap",
-      "file": "clap.wav",
+      "label": "HiHat (O)",
+      "file": "hihat_open.wav",
       "animationType": "flash",
-      "color": "#ECCC68",
+      "color": "#FFFFFF",
       "keyMapping": "R"
     },
     {
       "id": "s05",
-      "label": "Analog Tom",
-      "file": "tom.wav",
-      "animationType": "wave",
-      "color": "#7B7FFA",
-      "keyMapping": "T"
-    },
-    {
-      "id": "s06",
-      "label": "Soft Pad",
-      "file": "a.wav",
-      "animationType": "bloom",
-      "color": "#7BED9F",
+      "label": "Clap",
+      "file": "clap.wav",
+      "animationType": "shatter",
+      "color": "#ECCC68",
       "keyMapping": "A"
     },
     {
-      "id": "s07",
-      "label": "Sub Bass",
-      "file": "bass.wav",
-      "animationType": "pulse",
-      "color": "#FF6B81",
+      "id": "s06",
+      "label": "Tom Low",
+      "file": "tom_low.wav",
+      "animationType": "wave",
+      "color": "#7B7FFA",
       "keyMapping": "S"
     },
     {
-      "id": "s08",
-      "label": "Crystal Bell",
-      "file": "bell.wav",
-      "animationType": "spiral",
-      "color": "#1E90FF",
+      "id": "s07",
+      "label": "Tom High",
+      "file": "tom_high.wav",
+      "animationType": "wave",
+      "color": "#A29BFE",
       "keyMapping": "D"
     },
     {
-      "id": "s09",
-      "label": "FM Pluck",
-      "file": "pluck.wav",
-      "animationType": "orbit",
-      "color": "#FFA502",
+      "id": "s08",
+      "label": "Rimshot",
+      "file": "rimshot.wav",
+      "animationType": "spiral",
+      "color": "#FF7F50",
       "keyMapping": "F"
     },
     {
+      "id": "s09",
+      "label": "Shaker",
+      "file": "shaker.wav",
+      "animationType": "orbit",
+      "color": "#7BED9F",
+      "keyMapping": "Z"
+    },
+    {
       "id": "s10",
-      "label": "Neon Zap",
-      "file": "zap.wav",
-      "animationType": "shatter",
-      "color": "#D291BC",
-      "keyMapping": "G"
+      "label": "Cowbell",
+      "file": "cowbell.wav",
+      "animationType": "bloom",
+      "color": "#FF6B81",
+      "keyMapping": "X"
     }
   ]
 }
